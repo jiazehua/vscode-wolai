@@ -37,7 +37,7 @@ function activate(context) {
             );
 
             // 设置Webview的内容
-            panel.webview.html = getWebviewContent(url);
+            panel.webview.html = getWebviewContent(url, true);
         }
     });
 
@@ -45,7 +45,35 @@ function activate(context) {
     context.subscriptions.push(openCustomWebsiteDisposable);
 }
 
-function getWebviewContent(url) {
+function getWebviewContent(url, isCustom = false) {
+    const customStyle = isCustom ? 'opacity: 0.1;' : '';
+
+    const script = `
+        (function() {
+            const vscode = acquireVsCodeApi();
+            window.addEventListener('message', event => {
+                const links = document.querySelectorAll('a');
+                links.forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        vscode.postMessage({
+                            command: 'openLink',
+                            url: link.href
+                        });
+                    });
+                });
+            });
+
+            const iframe = document.getElementById('iframe');
+            iframe.addEventListener('load', () => {
+                const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
+                const style = iframeDocument.createElement('style');
+                style.textContent = 'body { opacity: 0.1; }';
+                iframeDocument.head.appendChild(style);
+            });
+        }())
+    `;
+
     return `
         <!DOCTYPE html>
         <html lang="en">
@@ -65,11 +93,13 @@ function getWebviewContent(url) {
                     width: 100%;
                     height: 100%;
                     border: none;
+                    ${customStyle}
                 }
             </style>
         </head>
         <body>
-            <iframe src="${url}" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+            <iframe id="iframe" src="${url}" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+            <script>${script}</script>
         </body>
         </html>
     `;
