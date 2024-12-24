@@ -11,7 +11,8 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:wolai.openWebsite"
+    "onCommand:wolai.openWebsite",
+    "onCommand:wolai.openCustomWebsite"
   ],
   "main": "./extension.js",
   "contributes": {
@@ -19,6 +20,10 @@
       {
         "command": "wolai.openWebsite",
         "title": "Open Wolai Website"
+      },
+      {
+        "command": "wolai.openCustomWebsite",
+        "title": "Open Custom Website"
       }
     ]
   },
