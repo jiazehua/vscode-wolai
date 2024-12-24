@@ -2,7 +2,7 @@
   "name": "wolai",
   "displayName": "wolai",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "jiazehua",
   "engines": {
     "vscode": "^1.96.0"
